@@ -3,7 +3,7 @@
 ## `man`
 It is regularly used to refer to the manuals of commands. `man -K <search term>` can be used to search for a term across all manual pages
 
-## `<command --help`
+## `<command> --help`
 It is used by some programs in place of the man page
 
 ## Terminal Builtins
