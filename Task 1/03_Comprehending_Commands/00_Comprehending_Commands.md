@@ -9,7 +9,3 @@ This is new to me, but it seems useful for the future. It can be used to find fi
 ## File Linking
 Symolic links are used on a daily basis. The `ln` command is useful in creating these with its `-s` argument. The `man` page of `ln` reveals that the `-s` argument is used to create symbolic links.
 Hard links are more rarely used, however. Though, they are not used in this module.
-
-## Learnt
-- Hard links
-- `ln` command and its `-s` argument

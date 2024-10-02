@@ -1,0 +1,3 @@
+# Searching for Manuals
+
+`man man` reveals that the `-K` argument is used to search for manuals. `man -K flag` helps find the argument required by `/challenge/challenge` to get the flag.
