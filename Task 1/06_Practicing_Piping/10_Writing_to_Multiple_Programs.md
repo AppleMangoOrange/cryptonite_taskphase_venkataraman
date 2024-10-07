@@ -8,4 +8,5 @@ Even though the program warns us not to try and copy-paste the data, a similar a
 
 
 ## Solution:
-[solution](10_Writing_to_Multiple_Programs.png)
+
+![solution](10_Writing_to_Multiple_Programs.png)

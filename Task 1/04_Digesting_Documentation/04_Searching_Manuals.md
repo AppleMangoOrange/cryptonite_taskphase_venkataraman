@@ -4,4 +4,5 @@ After opening the manual for challenge, searching for `flag` and skipping the fi
 
 
 ## Solution:
-[solution](04_Searching_Manuals.png)
+
+![solution](04_Searching_Manuals.png)

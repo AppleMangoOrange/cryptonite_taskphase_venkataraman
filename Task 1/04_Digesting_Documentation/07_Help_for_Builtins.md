@@ -4,4 +4,5 @@ Builtins are commands built into the terminal. `help` shows that there is a `cha
 
 
 ## Solution:
-[solution](07_Help_for_Builtins.png)
+
+![solution](07_Help_for_Builtins.png)

@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](02_catting_Absolute_Paths.png)
+
+![solution](02_catting_Absolute_Paths.png)

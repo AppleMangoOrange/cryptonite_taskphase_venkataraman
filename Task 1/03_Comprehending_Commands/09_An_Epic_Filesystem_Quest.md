@@ -4,4 +4,5 @@ This challenge has a long chain of clues, with trapped and hidden clues which re
 
 
 ## Solution:
-[solution](09_An_Epic_Filesystem_Quest.png)
+
+![solution](09_An_Epic_Filesystem_Quest.png)

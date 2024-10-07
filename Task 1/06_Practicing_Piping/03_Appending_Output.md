@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](03_Appending_Output.png)
+
+![solution](03_Appending_Output.png)

@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](07_Removing_Files.png)
+
+![solution](07_Removing_Files.png)

@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](04_grepping_for_a_Needle_in_a_Haystack.png)
+
+![solution](04_grepping_for_a_Needle_in_a_Haystack.png)

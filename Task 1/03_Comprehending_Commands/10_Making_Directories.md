@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](10_Making_Directories.png)
+
+![solution](10_Making_Directories.png)

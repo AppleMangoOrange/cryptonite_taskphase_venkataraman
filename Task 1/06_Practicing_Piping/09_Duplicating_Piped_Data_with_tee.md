@@ -5,4 +5,5 @@ Running the command again with the secret attribute, and keeping `pwn_out` in th
 
 
 ## Solution:
-[solution](09_Duplicating_Piped_Data_with_tee.png)
+
+![solution](09_Duplicating_Piped_Data_with_tee.png)

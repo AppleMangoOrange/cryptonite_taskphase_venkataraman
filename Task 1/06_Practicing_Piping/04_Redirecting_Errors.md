@@ -4,4 +4,5 @@ Whichever channel is redirected does not get printed on the terminal. The progra
 
 
 ## Solution:
-[solution](04_Redirecting_Errors.png)
+
+![solution](04_Redirecting_Errors.png)

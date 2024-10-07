@@ -4,4 +4,5 @@
 
 ## Solution:
 `$ hello`
-[solution](01_The_Root.png)
+
+![solution](01_The_Root.png)

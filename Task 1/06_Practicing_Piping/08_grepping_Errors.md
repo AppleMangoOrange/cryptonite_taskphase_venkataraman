@@ -4,4 +4,5 @@ The terminal prints `stderr` even though it has been redirected to `stdout`. `/c
 
 
 ## Solution:
-[solution](08_grepping_Errors.png)
+
+![solution](08_grepping_Errors.png)

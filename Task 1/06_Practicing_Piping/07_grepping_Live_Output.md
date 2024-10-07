@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](07_grepping_Live_Output.png)
+
+![solution](07_grepping_Live_Output.png)

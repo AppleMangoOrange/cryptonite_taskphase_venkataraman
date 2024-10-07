@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](06_Touching_Files.png)
+
+![solution](06_Touching_Files.png)

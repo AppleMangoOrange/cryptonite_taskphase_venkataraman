@@ -6,4 +6,5 @@ Since using Process Substitution converts program into files, we can separately 
 
 
 ## Solution:
-[solution](11_Split-piping_stderr_and_stdout.png)
+
+![solution](11_Split-piping_stderr_and_stdout.png)

@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](05_Searching_for_Manuals.png)
+
+![solution](05_Searching_for_Manuals.png)

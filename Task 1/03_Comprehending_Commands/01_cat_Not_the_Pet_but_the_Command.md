@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](01_cat_Not_the_Pet_but_the_Command.png)
+
+![solution](01_cat_Not_the_Pet_but_the_Command.png)

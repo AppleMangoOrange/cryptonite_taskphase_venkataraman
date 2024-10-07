@@ -4,4 +4,5 @@ The flag resides in `/flag`, so `/challenge/challenge --printfile /flag` works t
 
 
 ## Solution:
-[solution](02_Learning_Complex_Usage.png)
+
+![solution](02_Learning_Complex_Usage.png)

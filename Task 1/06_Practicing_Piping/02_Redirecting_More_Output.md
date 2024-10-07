@@ -4,4 +4,5 @@ Errors are not passed onto the output file, only `stdout` is. `/challenge/run > 
 
 
 ## Solution:
-[solution](02_Redirecting_More_Output.png)
+
+![solution](02_Redirecting_More_Output.png)

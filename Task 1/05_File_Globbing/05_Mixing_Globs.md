@@ -8,4 +8,5 @@ Mixing globs is a bit complicated
 
 
 ## Solution:
-[solution](05_Mixing_Globs.png)
+
+![solution](05_Mixing_Globs.png)

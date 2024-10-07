@@ -4,4 +4,5 @@
 
 
 ## Solution:
-[solution](03_More_catting_Practice.png)
+
+![solution](03_More_catting_Practice.png)

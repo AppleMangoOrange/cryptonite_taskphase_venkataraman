@@ -5,4 +5,5 @@
 
 
 ## Solution:
-[solution](01_Redirecting_Output.png)
+
+![solution](01_Redirecting_Output.png)
