@@ -4,4 +4,4 @@ The command `whoami` prints the username to the terminal. `pwn.college` has impl
 
 ## Solution:
 `$ hello`
-[solution](01_Intro_to_Commands.png)
+![solution](01_Intro_to_Commands.png)
