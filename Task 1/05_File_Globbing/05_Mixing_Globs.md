@@ -5,3 +5,7 @@ Mixing globs is a bit complicated
 - Two of the words have 2 Ns
 - Using this, `*[nc]*n*` works. Although, this does not achieve the 6 character limit
 - Looking at the other files in the folder, `[cep]*` works
+
+
+## Solution:
+[solution](05_Mixing_Globs.png)
