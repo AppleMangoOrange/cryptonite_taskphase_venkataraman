@@ -8,3 +8,8 @@ VALUE
 
 
 ```
+
+
+## Solution:
+
+![solution](04_Exporting_Variables.png)
