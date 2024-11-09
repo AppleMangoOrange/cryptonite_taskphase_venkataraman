@@ -206,6 +206,38 @@ picoCTF{custom_d2cr0pt6d_751a22dc}
 
 # miniRSA
 
-**Flag:** ``
+**Flag:** `picoCTF{n33d_a_lArg3r_e_ccaa7776}`
 
 ## Approach
+
+- The given data has a small public exponent and relatively small ciphertext. This means we can apply the cube root attack (since e = 3) to the ciphertext. This gives:
+`13016382529449106065894479374027604750406953699090365388203708028670029596145277`
+- Then, we can conver this number to hexadecimal:
+`0x7069636f4354467b6e3333645f615f6c41726733725f655f63636161373737367d`
+- This can then be separated into groups of 2 digits and converted to utf-8 to get the flag.
+- All of this can just be done by the RsaCtfTool python script.
+```
+Decrypted data :
+HEX : 0x7069636f4354467b6e3333645f615f6c41726733725f655f63636161373737367d
+INT (big endian) : 13016382529449106065894479374027604750406953699090365388203708028670029596145277
+INT (little endian) : 14498533606165685119718956852327439022714916090771037807901302412009841646332272
+utf-8 : picoCTF{n33d_a_lArg3r_e_ccaa7776}
+STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
+```
+
+## References
+
+- https://ctf101.org/cryptography/what-is-rsa/
+- https://github.com/RsaCtfTool/RsaCtfTool
+- https://www.dcode.fr/unicode-coding
+- https://www.mathsisfun.com/calculator-precision.html
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
