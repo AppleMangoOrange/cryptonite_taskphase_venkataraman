@@ -214,7 +214,7 @@ picoCTF{custom_d2cr0pt6d_751a22dc}
 `13016382529449106065894479374027604750406953699090365388203708028670029596145277`
 - Then, we can conver this number to hexadecimal:
 `0x7069636f4354467b6e3333645f615f6c41726733725f655f63636161373737367d`
-- This can then be separated into groups of 2 digits and converted to utf-8 to get the flag.
+- This can then be separated into groups of 2 digits (1 byte each) and converted to `utf-8` to get the flag.
 - All of this can just be done by the RsaCtfTool python script.
 ```
 Decrypted data :
