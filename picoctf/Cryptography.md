@@ -241,3 +241,71 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 
 &nbsp;
 
+# rotation
+
+**Flag:** `picoCTF{r0tat1on_d3crypt3d_949af1a1}`
+
+## Approach
+
+- Apply brute force decrption of the Affine cipher knowing that the flag starts with `picoCTF`
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# ReadMyCert
+
+**Flag:** `picoCTF{read_mycert_41d1c74c}`
+
+## Approach
+
+- Opening the .csr file using the certificate manager shows its name, which is the flag
+
+## New concepts
+
+1. CSR and CSR files
+
+## References
+
+- https://en.wikipedia.org/wiki/Certificate_signing_request
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# HideToSee
+
+**Flag:** `picoCTF{atbash_crack_7142fde9}`
+
+## Approach
+
+- Use a steganographic decoder on the image to get `krxlXGU{zgyzhs_xizxp_7142uwv9}`
+- Use [an Atbash Cipher decoder](https://www.dcode.fr/atbash-cipher) to get the flag
+
+## Incorrect methods tried
+
+- Going to the website mentioned in the image
+
+## References
+
+- 
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+

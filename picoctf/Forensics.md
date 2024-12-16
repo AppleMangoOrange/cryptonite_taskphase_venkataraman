@@ -73,8 +73,7 @@
 ## Approach
 
 - The given image has the magic bytes of a Windows Bitmap file: `42 4D 8E 26`
-- The wikipedia entry for Bitmap files says that 14 bytes are reserved for the header and 40 bytes (assuming the widely-used Bitmap v1 standard) for the image information a.k.a the DIB Header.
-- Chaning bytes 15 and 16 to `28 00` respectively makes the file open-able in image viewers. (Though previously open-able in XNviewMP)
+- The wikipedia entry for Bitmap files says that 14 bytes are reserved for the header and 40 bytes (assuming the widely-used Bitmap v1 standard) for the image information a.k.a the DIB Header. Changing bytes 15 and 16 to `28 00` respectively makes the file open-able in image viewers (though previously open-able in XNviewMP)
 
 ![tunn3l_v1s10n-edit1](images/Forensics/tunn3l%20v1s10n/tunn3l_v1s10n-edit1)
 - The bytes 10-13 store the offset at which the image starts. Chaning these to `38 00 00 00` (just after the header ends) adds the previously ignored data
@@ -116,4 +115,21 @@
 
 &nbsp;
 
+# m00nwalk2
+
+**Flag:** `picoCTF{the_answer_lies_hidden_in_plain_sight}`
+
+## Approach
+
+- `message.wav` contains the same file as in `m00nwalk`. The clues, when decoded using QSSTV, reveal that the "password" is "`hidden_stegosaurus`"
+- Using a steganographic decoder we can recover the flag from `message.wav` using the given password.
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
 
