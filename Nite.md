@@ -1,13 +1,14 @@
 Write-ups for challenges completed in niteCTF
 
 # import rAnDoM.md
+This challenge was completed by me during the event.
 
 ## Flag: `nite{br0_y4pp1ng_s33d_sl1pp1ng}`
 
 ## Solution
-- The challenge makes it obvious that the `random` Python module is not cryptographically secure, and opts to use the mofied flag as the seed for `random`.
-- `chall.py` uses the module `rAnDoM.py` to generate 6 pseudo-random 30 bit integers using 4-byte chunks of the flag as the seed. Specifically, the numbers at the index values **0, 1, 2, 227, 228, 229** are used, which seems specific. Looking up how to reverse the rando m module with keywords `227 228 229` returns [this blog-post](https://stackered.com/blog/python-random-prediction/#seed-recovery-from-few-outputs), which is the solution to the challenge. The entire solution and the code is given in [this part](https://stackered.com/blog/python-random-prediction/#seed-recovery-from-few-outputs).
-- Put the required functions into `randrev.py` and make a script `rAnDrev.py` with the following code:
+1. The challenge makes it obvious that the `random` Python module is not cryptographically secure, and opts to use the mofied flag as the seed for `random`.
+2. `chall.py` uses the module `rAnDoM.py` to generate 6 pseudo-random 30 bit integers using 4-byte chunks of the flag as the seed. Specifically, the numbers at the index values **0, 1, 2, 227, 228, 229** are used, which seems specific. Looking up how to reverse the rando m module with keywords `227 228 229` returns [this blog-post](https://stackered.com/blog/python-random-prediction/#seed-recovery-from-few-outputs), which is the solution to the challenge. The entire solution and the code is given in [this part](https://stackered.com/blog/python-random-prediction/#seed-recovery-from-few-outputs).
+3. Put the required functions into `randrev.py` and make a script `rAnDrev.py` with the following code:
 ```
 import randrev
 
@@ -46,4 +47,84 @@ if __name__ == '__main__':
     [print(i, end='') for i in flag]
     print()
 ```
-- This code will return the flag when run in the terminal.
+4. This code will return the flag when run in the terminal.
+
+> Rest of the challenges were solved after the event
+
+# RSAabc
+
+## Flag: `nite{quICklY_grab_the_codE5_sgOqkA}`
+
+## Solution
+1. The challenge encrypts the flag using alphabet reversing, greek alphabet mapping and RSA. The RSA encryption is weak because one of the prime numbers lies in the range of (2^5, 2^25), which is too small.
+2. The encryption works for every character in the flag. The characters with composite ASCII values are only reversed. The characters with prime ASCII values are encrypted using RSA, then transformed to greek alphabets. This means the characters which remain in english are only reversed, while the ones in greek have been encrypted with RSA.
+3. The program masks the ciphertext in the output by editing one bit before writing, but this change is completely reversible.
+4. The following code decrypts the encoded flag:
+```
+import sympy as sp
+import ciphermod # Importing the given program
+
+def int_to_string(n):
+    return bytes.fromhex(hex(n)[2:]).decode()
+
+def rsa_decrypt(ciphertext: int, private_key: (int, int)) -> str:
+    n, d = private_key
+    message_as_int = pow(ciphertext, d, n)
+    message = int_to_string(message_as_int)
+    return message
+
+flag = ""
+
+enc = "mrgπeτfΟΔςoΝeηiδyegsλexlwVαehιΠπμZe"
+ct = [<copy the list ct from out.txt>]
+nlist = [<copy the list n from out.txt>]
+
+english =   ['A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g', 'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n', 'O', 'o', 'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't', 'U', 'u', 'V', 'v', 'W', 'w', 'X', 'x', 'Y', 'y', 'Z', 'z']
+language =  ['Α', 'α', 'Β', 'β', 'Σ', 'σ', 'Δ', 'δ', 'Ε', 'ε', 'Φ', 'φ', 'Γ', 'γ', 'Η', 'η', 'Ι', 'ι', 'Ξ', 'ξ', 'Κ', 'κ', 'Λ', 'λ', 'Μ', 'μ', 'Ν', 'ν', 'Ο', 'ο', 'Π', 'π', 'Θ', 'θ', 'Ρ', 'ρ', 'Σ', 'ς', 'Τ', 'τ', 'Υ', 'υ', 'Ω', 'ω', 'Ψ', 'ψ', 'Χ', 'χ', 'Υ', 'υ', 'Ζ', 'ζ']
+
+for i, ch in enumerate(enc):
+    print(f"Now computing letter {i+1}/{len(enc)}")
+    if (ch in english):
+        flag += ciphermod.reverse_alphabet(ch)
+    else:
+        # Reverse ciphertext masking
+        lan = ch
+        eng = english[language.index(lan)]
+        ciphertext = ciphermod.googly(ct[i], ct[i].bit_length() - ord(eng))
+
+        # Calculate the private exponent d
+        n = nlist[i]
+        e = 65537
+        for divr in range(2**5 + 1, 2**25, 2):
+            if (n % divr == 0):
+                p = divr
+                q = n // divr
+                break
+        phi_n = (p - 1) * (q - 1)
+        d = sp.mod_inverse(e, phi_n)
+        privkey = (n, d)
+
+        # Decrypt the character
+        message = rsa_decrypt(ciphertext, privkey)
+        flag += message
+
+
+print(f"FLAG FOUND: {flag}")
+# OUTPUT: nitevquICklYvgrabvthevcodE5vsgOqkAv
+```
+4. The function `reverse_alphabet()` outputs `e` if the input is `_`, `{` or `}`. The reverse of `e` is `v`. This means that the `v`s in the output of the code above are one of these special characters, which can easily be substituted:
+`nite{quICklY_grab_the_codE5_sgOqkA}`
+
+# La Casa de Papel
+
+## Flag: `nite{El_Pr0f3_0f_Prec1s10n_Pl4ns}`
+
+## Solution
+1. Use to `Practice Convo` to encrypt any messagelike `REPLACE`. Decode the base64 encoding of the md5 hash.
+2. Use length extension attacks to append `Bob` to the md5 hash
+```
+secret + b'REPLACE' = cdb9d8aa74b9b1298f5f8e2712b2519b
+secret + b'Bob' = b4e0a802428cb35f69c0e952d96172d6
+```
+3. Use this to get the password from Alice with the name `Bob`: `G0t_Th3_G0ld_B3rl1nale`
+4. `Crack the Vault` with the password: `nite{El_Pr0f3_0f_Prec1s10n_Pl4ns}`
