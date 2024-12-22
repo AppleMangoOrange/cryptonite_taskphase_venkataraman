@@ -296,9 +296,85 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 
 - Going to the website mentioned in the image
 
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# SRA
+
+**Flag:** `picoCTF{7h053_51n5_4r3_n0_m0r3_dd808298}`
+
+## Approach
+
+- The program uses names of sins to name variables, which can be easily deciphered as RSA variables:
+```
+plaintext = "".join(choice(ascii_letters + digits) for _ in range(16))
+p = getPrime(128)
+q = getPrime(128)
+n = p * q
+e = 65537
+d = inverse(e, (p - 1) * (q - 1))
+
+ciphertext = pow(bytes_to_long(plaintext.encode()), e, n)
+
+print(f"{ciphertext = }")
+print(f"{d = }")
+
+print("input_text?")
+input_text = input("> ").strip()
+
+if input_text == plaintext:
+    print("Conquered!")
+    with open("/challenge/flag.txt") as f:
+        print(f.read())
+else:
+    print("Hubris!")
+```
+
+- The program outputs the ciphertext and the private exponent, but not the modulus. Since `(d*e) ≡ 1 (mod n)` ⇒ `(d*e) - 1 ≡ 0 (mod n)` ⇒ `(d*e) - 1 = k * n`, where `k` is any whole number. Using this, the following program finds n through bruteforce and outputs the alphanumeral plaintext:
+```
+import Crypto.Util.number as cry
+import sympy
+import math
+
+ciphertext = ... # Input
+d = ... # Input
+
+e = 65537 # known
+
+div = sympy.divisors(e*d - 1)
+primes = [x+1 for x in div if (int(math.log2(x+1)) == 127)] # print(math.log2(cry.getPrime(128)))
+
+
+for p in primes:
+    for q in primes:
+        n = p * q
+        try:
+            plaintext = pow(ciphertext, d, n).to_bytes(16).decode()
+        except OverflowError:
+            continue
+        print(f"{">>>" if plaintext.isalnum() else ""}{plaintext}")
+
+```
+
+## New concepts
+
+1. More concepts in Modular Arithmetic
+
+## Incorrect methods tried
+
+- Finding `n` for all values of `p` and `q` without filtering
+
 ## References
 
-- 
+- https://github.com/RsaCtfTool/RsaCtfTool
+- https://ctf101.org/cryptography/what-is-rsa/
+
 
 &nbsp;
 
@@ -309,3 +385,91 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 
 &nbsp;
 
+# rsa-oracle
+
+**Flag:** `picoCTF{su((3ss_(r@ck1ng_r3@_881d93b6}`
+
+## Approach
+
+- Since it is easy to encrypt/decrypt any number using the oracle, it is easy to use a CPA (Chosen Plainetext Attack)
+- Encrypting `2` with the oracle returns 
+```
+4707619883686427763240856106433203231481313994680729548861877810439954027216515481620077982254465432294427487895036699854948548980054737181231034760249505
+```
+- Multiplying with the password:
+```
+8309123510912461959808862575577506568980638191919068913508647821620764640014326902659577232892646106320049174456027132117561974697506072947542595801124414707062811856434694174516846811411223916199405518690220657132395429747802747678528921583821953733155445656601842923912509578170177053137398927381505510500
+```
+- Decrypting with the oracle: `0xafaf9a59322` = `12073046479650`
+- Divide by ASCII value of '2', i.e. `50`: `0x3838316439`
+- Decode as ASCII values: `0b'\x38\x38\x31\x64\x39'` = `881d9`
+- Decrypt password using `openssl` (the password is identified as `openssl enc'd data with salted password ` using `file`)
+```
+$ openssl aes-256-cbc -d -in secret.enc
+enter AES-256-CBC decryption password:
+*** WARNING : deprecated key derivation used.
+Using -iter or -pbkdf2 would be better.
+picoCTF{su((3ss_(r@ck1ng_r3@_881d93b6}
+```
+
+## New concepts
+
+1. CPA
+
+## References
+
+- https://www.geeksforgeeks.org/modular-arithmetic/
+- https://crypto.stackexchange.com/questions/2323/how-does-a-chosen-plaintext-attack-on-rsa-work
+- https://stackoverflow.com/questions/16056135/how-to-use-openssl-to-encrypt-decrypt-files
+- https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Mind your Ps and Qs
+
+**Flag:** `picoCTF{sma11_N_n0_g0od_73918962}`
+
+## Approach
+
+- Use the RsaCtfTool:
+```
+$ python RsaCtfTool.py -n 1584586296183412107468474423529992275940096154074798537916936609523894209759157543 -e 65537 --decrypt 964354128913912393938480857590969826308054462950561875638492039363373779803642185
+private argument is not set, the private key will not be displayed, even if recovered.
+['/tmp/tmp1q7am4i8']
+
+[*] Testing key /tmp/tmp1q7am4i8.
+attack initialized...
+attack initialized...
+[*] Performing lucas_gcd attack on /tmp/tmp1q7am4i8.
+100%|████████████████████████████████████████████████| 9999/9999 [00:00<00:00, 430999.59it/s]
+[+] Time elapsed: 0.0285 sec.
+[*] Performing factordb attack on /tmp/tmp1q7am4i8.
+[*] Attack success with factordb method !
+[+] Total time elapsed min,max,avg: 0.0285/0.0285/0.0285 sec.
+
+Results for /tmp/tmp1q7am4i8:
+
+Decrypted data :
+HEX : 0x007069636f4354467b736d6131315f4e5f6e305f67306f645f37333931383936327d
+INT (big endian) : 13016382529449106065927291425342535437996222135352905256639684640304028661985917
+INT (little endian) : 3711160986047915108755079562074128500208424285494215969975035182007076726805983232
+utf-8 : picoCTF{sma11_N_n0_g0od_73918962}
+utf-16 : 瀀捩䍯䙔獻慭ㄱ也湟弰で摯㝟㤳㠱㘹紲
+STR : b'\x00picoCTF{sma11_N_n0_g0od_73918962}'
+```
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;

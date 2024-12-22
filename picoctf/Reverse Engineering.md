@@ -468,3 +468,344 @@ Access denied!
 
 &nbsp;
 
+# Classic Crackme 0x100
+
+**Flag:** `picoCTF{s0lv3_angry_symb0ls_4699696e}`
+
+## Approach
+
+- Disassemble the given program:
+`dbg.main`
+```
+undefined8 dbg.main(void)
+{
+    uint32_t uVar1;
+    int32_t iVar2;
+    char input [51];
+    char output [51];
+    int64_t var_28h;
+    int secret3;
+    int secret2;
+    int secret1;
+    int len;
+    int32_t iStack_10;
+    int i;
+    
+    output = "qhcpgbpuwbaggepulhstxbwowawfgrkzjstccbnbshekpgllze"
+    setvbuf(_stdout, 0, 2, 0);
+    printf("Enter the secret password: ");
+    __isoc99_scanf("%50s", input);
+    i = 0;
+    len = strlen(output);
+    secret1 = 0x55;
+    secret2 = 0x33;
+    secret3 = 0xf;
+    var_28h._7_1_ = 'a';
+    for (; i < 3; i = i + 1) {
+        for (iStack_10 = 0; iStack_10 < len; iStack_10 = iStack_10 + 1) {
+            uVar1 = (iStack_10 % 0xff >> 1 & secret1) + (iStack_10 % 0xff & secret1);
+            uVar1 = ((int32_t)uVar1 >> 2 & secret2) + (secret2 & uVar1);
+            iVar2 = ((int32_t)uVar1 >> 4 & secret3) +
+                    ((int32_t)input[iStack_10] - (int32_t)var_28h._7_1_) + (secret3 & uVar1);
+            input[iStack_10] = var_28h._7_1_ + (char)iVar2 + (char)(iVar2 / 0x1a) * -0x1a;
+        }
+    }
+    iVar2 = memcmp(input, output, SEXT48(len));
+    if (iVar2 == 0) {
+        printf("SUCCESS! Here is your flag: %s\n", "picoCTF{sample_flag}");
+    } else {
+        puts("FAILED!");
+    }
+    return 0;
+}
+```
+- Convert the code to Python:
+```
+output = "qhcpgbpuwbaggepulhstxbwowawfgrkzjstccbnbshekpgllze"
+inp = input("Enter the secret password: ")[:50] # input
+
+length = len(output) # len
+def crackme(inp: str):
+    inp = list(inp)
+    secret1 = 0x55
+    secret2 = 0x33
+    secret3 = 0xf
+    a = ord('a')
+
+    for i in range(0, 3):
+        for j in range(0, length):
+            # print("testing:", j, inp[j])
+            uVar1 = (j % 0xff >> 1 & secret1) + (j & 0xff & secret1)
+            uVar1 = (uVar1 >> 2 & secret2) + (secret2 & uVar1)
+            iVar2 = (uVar1 >> 4 & secret3) + (ord(inp[j]) - a) + (secret3 & uVar1)
+            inp[j] = chr(a + iVar2 + (iVar2 // 0x1a) * -0x1a)
+    
+    return "".join(inp)
+
+print(crackme("aiousdbviubauwkeyfbuiashfduihusidrhgiuvsdlfiuhbsui"))
+# Output: alravjhelahjaftqblhdojbtlmduqgexgxnpodeejuoudtnhar
+```
+- Simplify the code. It is a cyclic cipher.
+```
+inp = input("Enter the secret password: ")[:50] # input
+
+def crackme(inp: str):
+    def cyclic_cipher(offset: int, char: str):
+        offset_map = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3]
+        a = ord('a')
+        term = offset_map[offset] + (ord(char) - a)
+        return chr(a + term % 26)
+
+    inp = list(inp)
+    a = ord('a')
+
+    for i in range(0, 3):
+        for j in range(0, 50):
+            # print((uVar1 >> 4 & secret3) + (ord(inp[j]) - a)) # To generate offset map
+            inp[j] = crack(j, inp[j])
+    return "".join(inp)
+
+print(crackme("aiousdbviubauwkeyfbuiashfduihusidrhgiuvsdlfiuhbsui"))
+# Output: alravjhelahjaftqblhdojbtlmduqgexgxnpodeejuoudtnhar
+```
+- Reverse the cyclic cipher
+```
+out = "qhcpgbpuwbaggepulhstxbwowawfgrkzjstccbnbshekpgllze"
+
+def crack(enc: str):
+    def cyclic_inverse(offset: int, char: str):
+        offset_map = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3]
+        a = ord('a')
+        term = (ord(char) - a) - offset_map[offset]
+        return chr(a + term % 26)
+
+    enc = list(enc)
+
+    for i in range(0, 3):
+        for j in range(0, 50):
+            enc[j] = cyclic_inverse(j, enc[j])
+    
+    return "".join(enc)
+
+print(crack(out))
+# Output: qezjdvjltvuxavgiibmkrsncqrntxfykgmntwsepmyvyguzwtv
+```
+- Enter the output into the program to get the flag
+
+## Incorrect methods tried
+
+- Attempting to reverse the individual terms
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# unpackme.py
+
+**Flag:** `picoCTF{175_chr157m45_cd82f94c}`
+
+## Approach
+
+- The payload contains the code that checks the password being input by the user. Printing it before its execution reveals the flag.
+
+Input:
+```
+import base64
+from cryptography.fernet import Fernet
+
+
+
+payload = b'...'
+
+key_str = 'correctstaplecorrectstaplecorrec'
+key_base64 = base64.b64encode(key_str.encode())
+f = Fernet(key_base64)
+plain = f.decrypt(payload)
+print(f"plain: {plain.decode()}")
+# exec(plain.decode())
+```
+Output:
+```
+plain: 
+pw = input('What\'s the password? ')
+
+if pw == 'batteryhorse':
+  print('picoCTF{175_chr157m45_cd82f94c}')
+else:
+  print('That password is incorrect.')
+
+```
+
+## New concepts
+
+1. `cryptography.fernet.Fernet` encrypting
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Picker I
+
+**Flag:** `picoCTF{4_d14m0nd_1n_7h3_r0ugh_ce4b5d5b}`
+
+## Approach
+
+- Enter `win` in the input of the program
+- [Decode the flag](https://gchq.github.io/CyberChef/#recipe=Split('%200x','')From_Hex('0x')&input=MHg3MCAweDY5IDB4NjMgMHg2ZiAweDQzIDB4NTQgMHg0NiAweDdiIDB4MzQgMHg1ZiAweDY0IDB4MzEgMHgzNCAweDZkIDB4MzAgMHg2ZSAweDY0IDB4NWYgMHgzMSAweDZlIDB4NWYgMHgzNyAweDY4IDB4MzMgMHg1ZiAweDcyIDB4MzAgMHg3NSAweDY3IDB4NjggMHg1ZiAweDYzIDB4NjUgMHgzNCAweDYyIDB4MzUgMHg2NCAweDM1IDB4NjIgMHg3ZA) from hex
+
+
+## New concepts
+
+1. `exec()` and `eval()` functions in Python
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Picker II
+
+**Flag:** `picoCTF{f1l73r5_f41l_c0d3_r3f4c70r_m1gh7_5ucc33d_0b5f1131}`
+
+## Approach
+
+- The program checks if the user input contains `win`, so get around it using multiple `b'...'.decode()` and `+` (string concatenation).
+- Use `printf` in the terminal to enter the input:
+```
+$ python picker-II.py < <(printf "exec(b'\x77'.decode() + b'\x69\x6e'.decode() + '()')\n#")
+TEST_FLAG
+```
+- [Decode the flag from hex](https://gchq.github.io/CyberChef/#recipe=Split('%200x','')From_Hex('0x')&input=MHg3MCAweDY5IDB4NjMgMHg2ZiAweDQzIDB4NTQgMHg0NiAweDdiIDB4NjYgMHgzMSAweDZjIDB4MzcgMHgzMyAweDcyIDB4MzUgMHg1ZiAweDY2IDB4MzQgMHgzMSAweDZjIDB4NWYgMHg2MyAweDMwIDB4NjQgMHgzMyAweDVmIDB4NzIgMHgzMyAweDY2IDB4MzQgMHg2MyAweDM3IDB4MzAgMHg3MiAweDVmIDB4NmQgMHgzMSAweDY3IDB4NjggMHgzNyAweDVmIDB4MzUgMHg3NSAweDYzIDB4NjMgMHgzMyAweDMzIDB4NjQgMHg1ZiAweDMwIDB4NjIgMHgzNSAweDY2IDB4MzEgMHgzMSAweDMzIDB4MzEgMHg3ZA)
+
+## New concepts
+
+1. `echo` vs `printf` in terminal
+
+## Incorrect methods tried
+
+- Using `echo` to input the string
+- Trying to use multiple statements in `eval()`
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Picker III
+
+**Flag:** `picoCTF{7h15_15_wh47_w3_g37_w17h_u53r5_1n_ch4rg3_c20f5222}`
+
+## Approach
+
+- The program checks user input for brackets but not for the `win` keyword
+- Overwrite `getRandomNumber` with `win`:
+```
+$ nc saturn.picoctf.net 55249
+==> 1
+1: print_table
+2: read_variable
+3: write_variable
+4: getRandomNumber
+==> 3
+Please enter variable name to write: getRandomNumber
+Please enter new value of variable: win
+==> 4
+0x70 0x69 0x63 0x6f 0x43 0x54 0x46 0x7b 0x37 0x68 0x31 0x35 0x5f 0x31 0x35 0x5f 0x77 0x68 0x34 0x37 0x5f 0x77 0x33 0x5f 0x67 0x33 0x37 0x5f 0x77 0x31 0x37 0x68 0x5f 0x75 0x35 0x33 0x72 0x35 0x5f 0x31 0x6e 0x5f 0x63 0x68 0x34 0x72 0x67 0x33 0x5f 0x63 0x32 0x30 0x66 0x35 0x32 0x32 0x32 0x7d 
+==>
+```
+- [Decode the flag from hex](https://gchq.github.io/CyberChef/#recipe=Split('%200x','')From_Hex('0x')&input=MHg3MCAweDY5IDB4NjMgMHg2ZiAweDQzIDB4NTQgMHg0NiAweDdiIDB4MzcgMHg2OCAweDMxIDB4MzUgMHg1ZiAweDMxIDB4MzUgMHg1ZiAweDc3IDB4NjggMHgzNCAweDM3IDB4NWYgMHg3NyAweDMzIDB4NWYgMHg2NyAweDMzIDB4MzcgMHg1ZiAweDc3IDB4MzEgMHgzNyAweDY4IDB4NWYgMHg3NSAweDM1IDB4MzMgMHg3MiAweDM1IDB4NWYgMHgzMSAweDZlIDB4NWYgMHg2MyAweDY4IDB4MzQgMHg3MiAweDY3IDB4MzMgMHg1ZiAweDYzIDB4MzIgMHgzMCAweDY2IDB4MzUgMHgzMiAweDMyIDB4MzIgMHg3ZA)
+
+## New concepts
+
+1. Overwriting Python objects' values
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Bit-O-Asm-1
+
+**Flag:** `picoCTF{48}`
+
+## Approach
+
+- `mov    eax,0x30` means the `eax` register has the number 48 (30 in hexadecimal)
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Bit-O-Asm-2
+
+**Flag:** `picoCTF{654874}`
+
+## Approach
+
+```
+mov    DWORD PTR [rbp-0x4],0x9fe1a
+mov    eax,DWORD PTR [rbp-0x4]
+```
+- The first line `0x9fe1a` (654874 in base 16) into `rbp-0x4`
+- The second line stores that value in the `eax` register
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Bit-O-Asm-3
+
+**Flag:** `picoCTF{2619997}`
+
+## Approach
+
+```
+mov    DWORD PTR [rbp-0x4],0x9fe1a
+mov    eax,DWORD PTR [rbp-0x4]
+```
+- `mov    eax,DWORD PTR [rbp-0xc]`: `eax` is now 654874
+- `imul   eax,DWORD PTR [rbp-0x8]`: `eax` is now 654874 * 4 = 2619496
+- `add    eax,0x1f5`: eax is now 2619496 + 501 = 2619997
+- The next two lines store the value of eax in the stack and retrieve it, which does not change its value
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
