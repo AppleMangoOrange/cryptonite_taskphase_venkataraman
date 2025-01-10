@@ -473,3 +473,380 @@ STR : b'\x00picoCTF{sma11_N_n0_g0od_73918962}'
 &nbsp;
 
 &nbsp;
+
+# Play Nice
+
+**Flag:** `f391b621282ef5063ab2de93ab9e4bff`
+
+## Approach
+
+- The challenge program encrypts the characters of the flag pairwise with a pre-determined key.
+- The ciphertext can be decoded by any [Playfair Cipher Decoding tool](https://www.dcode.fr/playfair-cipher), making sure to adjust the settings according to the defined functions.
+
+![Using the decoding tool](images/Cryptography/Play%20Nice/decode.png)
+- Copy the plaintext into the program to get the flag.
+
+## New concepts
+
+1. Playfair cipher
+
+## References
+
+- https://www.dcode.fr/playfair-cipher
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# b00tl3gRSA2
+
+**Flag:** `picoCTF{bad_1d3a5_4783252}`
+
+## Approach
+
+- The challenge states that the encryption is done with a large and small d. This means it is susceptible to Wiener's attack for small private exponent
+- Using the RsaCtfTool, crack the given cipher for Weiner's attack:
+```
+$ python 'RsaCtfTool.py' --output 'out.txt' \
+-n 103611701291979267908460620567054039903205794973215099895885434097295170995795192919919361998529155301506155154631322291880829946408979960389478913598274450633241613064118157154938221735388550306233782421984690493295721603923466786143319344261789033366083606324714599350541178246258363632534189264237044085899 \
+-e 96977972274460232735292780051019452548980677624120534090872460029634909807483908767578216646349038182243451231216563783912324179359342657586569816119623294026899553244238914236963761343629833075559739576714565922200661691210987040654314029683834668253381030207153962671214698577827071577874636084905749282321 \
+--decrypt 52140886119754190146597389199820890224910698214194285735445455499749173952778579688083673147972142352827169709518895591294019252529179176588188671722435306966943153650629574020297988535702479727870359599701522357789163904447048876718389591474454680994068810560598395293051534631819293467808186151799836548987 \
+--attack wiener
+private argument is not set, the private key will not be displayed, even if recovered.
+['/tmp/tmplcnrakca']
+
+[*] Testing key /tmp/tmplcnrakca.
+[*] Performing wiener attack on /tmp/tmplcnrakca.
+  5%|██▎                                                 | 14/311 [00:00<00:00, 28136.20it/s]
+[*] Attack success with wiener method !
+
+Results for /tmp/tmplcnrakca:
+
+Decrypted data :
+HEX : 0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007069636f4354467b6261645f31643361355f343738333235327d
+INT (big endian) : 180638594769037903267909311328535969949661653466129492033745533
+INT (little endian) : 87915708203145282610294972968911366155903715376253613591493747328997039762324724152737381588249902516221925909575347268323406342359083908236607141716518709062203918941441530400517793579352373597960230114723867721326316384129937388432851450794910176330916868853347433852177960598981938565164199179134034771968
+utf-8 : picoCTF{bad_1d3a5_4783252}
+utf-16 : 楰潣呃筆慢彤搱愳張㜴㌸㔲紲
+STR : b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00picoCTF{bad_1d3a5_4783252}'
+```
+
+## References
+
+- https://github.com/RsaCtfTool/RsaCtfTool
+- https://ctf101.org/cryptography/what-is-rsa/
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# b00tl3gRSA3
+
+**Flag:** `picoCTF{too_many_fact0rs_4025135}`
+
+## Approach
+
+- The challenge states that the encryption is using many primes for n. This means n is much easier to factorise. Since RsaCtfTool does not support multi-prime moduli and sympy takes too long to factorise n, make use of [this tool](https://www.alpertron.com.ar/ECM.HTM) which returns the totient directly.
+- The following Python code uses the totient to get the flag:
+```
+n = 33093700808486240341458109416592994184150074848043993159249554901314666885731441051615884643599472094678057173943408764876452218722684400541722190004891985759726254219187375425337501771382232651743254791468919326601237882000489873955275268407566605613040221337608020185651328652208179357674112554187420228864931807057137388800587704091272227611
+c = 32262502512124397841210341275952172635461371366804247277562508019904927325573582041031932769248552961106919648108565278567342019711618949689101836096176498302492689546764850181320987059121472450310504499695328239494462888222425025525364244025256544641978846361991464242047180022132100835186871564443692451222459931450936323077480541128747037517
+e = 65537
+
+phi_n = int("33 093700 718005 622876 542509 700611 902762 083314 852436 460952 599080 032660 832342 374171 221893 463919 732966 795330 154138 536244 225885 437045 085412 133726 464285 047169 957338 646127 096930 048929 161386 674243 661791 959813 267171 190437 624841 962818 145507 489807 561148 347667 808027 963103 910871 747812 478099 753823 073047 239606 832670 564859 525169 341583 211888 640000 000000 000000".replace(' ', ''))
+d = pow(e, -1, phi_n)
+m = pow(c, d, n)
+
+print(m.to_bytes(33))
+```
+
+## References
+
+- https://ctf101.org/cryptography/what-is-rsa/
+- https://www.alpertron.com.ar/ECM.HTM
+- https://stackoverflow.com/questions/4798654/modular-multiplicative-inverse-function-in-python
+- https://gist.github.com/jackz314/09cf253d3451f169c2dbb6bbfed73782
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# XtraORdinary
+
+**Flag:** `picoCTF{w41t_s0_1_d1dnt_1nv3nt_x0r???}`
+
+## Approach
+
+- The challenge encrypts the flag by XOR-ing with a random "secret", then with a list of random strings. Since XOR is its own inverse, any XOR more than once can be reduced to modulo 2, i.e. XOR-text or plaintext.
+- Try out each combination of the random strings. This returns a list of random bytes. Then, XOR each of these byte strings with `picoCTF{` to get the key.
+```
+with open("output.txt", 'r') as f:
+    ciphertext = bytes.fromhex(f.read())
+
+def binpad(i: int, length: int):
+    i = bin(i)[2:]
+    i = '0' * (length - len(i)) + i
+    return i
+
+def decrypt(ptxt, key) -> bytes:
+    etxt = b''
+    for i in range(len(ptxt)):
+        a = ptxt[i]
+        b = key[i % len(key)]
+        etxt += bytes([a ^ b])
+    return etxt
+
+random_strs = [
+    b'my encryption method',
+    b'is absolutely impenetrable',
+    b'and you will never',
+    b'ever',
+    b'break it'
+]
+
+step1_possible = []
+def reverse_random():
+    global ciphertext
+    global random_strs
+    global step1_possible
+    print("Step 1:")
+    for i in range(2**len(random_strs)):
+        step1_possible.append(ciphertext)
+        i_bin = binpad(i, len(random_strs))
+        for j in range(len(i_bin)):
+            if int(i_bin[j]):
+                step1_possible[i] = decrypt(step1_possible[i], random_strs[j])
+        print(f"    {binpad(i, len(random_strs))}: {step1_possible[i]}")
+
+reverse_random()
+
+keys = []
+flag = b"picoCTF{"
+
+print("Step 2:")
+for i in range(len(step1_possible)):
+    keys.append(decrypt(flag, step1_possible[i]))
+    print(f"    {binpad(i, len(random_strs))}: {keys[-1]}")
+```
+```
+00111: b'Africa!A'
+```
+- The last 3 of the random strings have been used to encrypt the flag, presumably using the key `Africa!`
+- Now, decrypt the flag using this information.
+```
+with open("output.txt", 'r') as f:
+    ciphertext = bytes.fromhex(f.read())
+
+def decrypt(ptxt, key) -> bytes:
+    etxt = b''
+    for i in range(len(ptxt)):
+        a = ptxt[i]
+        b = key[i % len(key)]
+        etxt += bytes([a ^ b])
+    return etxt
+
+random_strs = [
+    b'my encryption method',
+    b'is absolutely impenetrable',
+    b'and you will never',
+    b'ever',
+    b'break it'
+]
+
+for i in random_strs[2:5]:
+    ciphertext = decrypt(ciphertext, i)
+
+key = "Africa!"
+
+print(decrypt(ciphertext, key.encode()).decode())
+```
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# Compress and Attack
+
+**Flag:** `picoCTF{sheriff_you_solved_the_crime}`
+
+## Approach
+
+- The Salsa20 cipher used in the challenge code does not seem to have any way to feasably decode it, so the weakest link in this case is the `zlib` library. The code outputs the length of the enrypted text in each iteration, and appending bits of the flag (greater than 3 characters) means zlib compresses the string down. Since the start of the flag (`picoCTF{`) is known, it is possible to iterate through printable characters to figure out the flag.
+```
+import string
+
+POSSIBLE_CHARS = string.printable
+
+
+def get_len(remote, payload: str) -> int:
+    print(f"PL: {payload}")
+    sh.sendline(payload)
+    compressed_length = int(sh.recvlines(3)[2].decode())
+    return compressed_length
+
+def getFlag(remote, known_flag: str) -> str:
+    # len(known_flag) > 2
+    global POSSIBLE_CHARS
+    flag = known_flag
+    COMPRESSED_SIZE = get_len(remote, flag)
+    # print(f"Flag status: {flag}")
+    while flag[-1] != '}':
+        # Loops until the flag is closed
+        for next_chr in POSSIBLE_CHARS:
+            # Checks each printable character for the next possible
+            # character of the flag
+            if (get_len(remote, flag + next_chr) == COMPRESSED_SIZE):
+                flag += next_chr
+                # print(next_chr)
+                break
+        else:
+            raise SyntaxError(f"Unexpected character at {len(flag) + 1}")
+    return flag
+
+if __name__ == '__main__':
+    import pwn
+    sh = pwn.remote("mercury.picoctf.net", 2431)
+    # Since the remote can stop responding at times, update this string with the progress
+    print(getFlag(sh, "picoCTF{"))
+
+```
+
+## New concepts
+
+1. zlib and GNU compression
+2. Salsa20 and Chacha20 ciphers
+3. AES encryption
+
+## Incorrect methods tried
+
+- Trying to crack the Salsa20 encryption
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# college-rowing-team
+
+**Flag:** `picoCTF{1_gu3ss_p30pl3_p4d_m3ss4g3s_f0r_4_r34s0n}`
+
+## Approach
+
+- The challenge provides a list of RSA-encrypted ciphertexts with the corresponding modulus and public exponent. The cipher's code reveals that the list contains randomly 3 encouraging messages and the flag, which are jumbled.
+- The public exponent is too small and the message is not padded in any way. This means that the cipher is vulnerable to attacks. The optimised code for this attack is given [here](https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa#small-exponent-short-plaintext-root). It leverages the fact that m<sup>3</sup> (m is the message as a number) is smaller than or comparable to n (n is the modulus). Here is the mathematical explanation:
+
+[//]: # (This code is taken from https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa#small-exponent-short-plaintext-root)
+
+<div class="w-full mx-auto decoration-primary/6 max-w-3xl page-api-block:ml-0 overflow-x-auto"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="right left" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>c</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><msup><mi>m</mi><mn>3</mn></msup><mtext> </mtext><mo lspace="0.22em" rspace="0.22em"><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow></mo><mtext> </mtext><mi>n</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><msup><mi>m</mi><mn>3</mn></msup></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>c</mi><mo>+</mo><mi>n</mi><mo>×</mo><mi>k</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>m</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mroot><mrow><mi>c</mi><mo>+</mo><mi>n</mi><mo>×</mo><mi>k</mi></mrow><mn>3</mn></mroot></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*} 
+c &amp;= m^3 \bmod n \\
+m^3 &amp;= c + n \times k \\
+m &amp;= \sqrt[3]{c + n \times k}
+\end{align*}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:4.6476em;vertical-align:-2.0738em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.5738em;"><span style="top:-4.7097em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">c</span></span></span><span style="top:-3.1856em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span><span style="top:-1.5862em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.0738em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.5738em;"><span style="top:-4.7097em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.0556em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.0556em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span></span></span><span style="top:-3.1856em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span><span style="top:-1.5862em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord sqrt"><span class="root"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8255em;"><span style="top:-3.0033em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size6 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9394em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span><span style="top:-2.8994em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z"></path></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1006em;"><span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.0738em;"><span></span></span></span></span></span></span></span></span></span></span></span></div>
+
+- Here, k is a small number, so iterating through whole numbers should be enough to get the plaintext flag. Here is the code, leveraging the code found on Practical CTF:
+
+`small_e_crack.py:`
+```
+# Credit: https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa
+
+from gmpy2 import iroot
+from Crypto.Util.number import long_to_bytes
+import itertools
+from tqdm import tqdm  # Progress bar
+
+def crack(c: int, n: int, e: int) -> bytes:
+    for k in tqdm(itertools.count()):
+        c_before_mod = c + n*k
+
+        if iroot(c_before_mod, e)[1]:  # If perfect root
+            break
+
+    plaintext = long_to_bytes(iroot(c_before_mod, e)[0])
+    return plaintext
+```
+`decode.py:`
+```
+import small_e_crack
+
+
+N = 0
+E = 1
+C = 2
+
+with open("encrypted-messages.txt", 'r') as f:
+    file = f.read().strip().split()
+
+ciphertexts_list = []
+for i in range(0, len(file), 6):
+    ciphertexts_list.append((int(file[i + 1]), int(file[i + 3]), int(file[i + 5])))
+
+for ct in ciphertexts_list:
+    plaintext = small_e_crack.crack(ct[C], ct[N], ct[E]).decode()
+    if "picoCTF{" in plaintext:
+        print(f"FOUND FLAG: {plaintext}")
+        exit(0)
+```
+output:
+```
+0it [00:00, ?it/s]
+0it [00:00, ?it/s]
+FOUND FLAG: picoCTF{1_gu3ss_p30pl3_p4d_m3ss4g3s_f0r_4_r34s0n}
+```
+
+## New concepts
+
+1. Hastad's attack
+
+## Incorrect methods tried
+
+- Using RsaCtfTool individually for each ciphertext
+
+## References
+
+- https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa
+- https://github.com/RsaCtfTool/RsaCtfTool
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+

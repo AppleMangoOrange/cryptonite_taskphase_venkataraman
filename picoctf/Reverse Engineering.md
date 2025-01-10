@@ -809,3 +809,177 @@ mov    eax,DWORD PTR [rbp-0x4]
 
 &nbsp;
 
+# Bit-O-Asm-4
+
+**Flag:** `picoCTF{654773}`
+
+## Approach
+
+- Let `DWORD PTR [rbp-0x4]` be `n`
+- `<+15>:    mov    DWORD PTR [rbp-0x4],0x9fe1a`: n is now 0x9fe1a
+- `<+22>:    cmp    DWORD PTR [rbp-0x4],0x2710`: comparing n and 0x2170, n > 0x2710
+- `<+29>:    jle    0x55555555514e <main+37>`: this instruction is not carried out because n was greater
+- `<+31>:    sub    DWORD PTR [rbp-0x4],0x65`: n is now 0x9fe1a - 0x65 = 0x9fdb5
+- `jmp    0x555555555152 <main+41>`: jumps to `<main+41>`
+- `mov    eax,DWORD PTR [rbp-0x4]`: eax = n = 0x9fdb5 = 654773
+
+## New concepts
+
+1. 
+
+## Incorrect methods tried
+
+- 
+
+## References
+
+- 
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# vault-door-6
+
+**Flag:** `picoCTF{n0t_mUcH_h4rD3r_tH4n_x0r_95be5dc}`
+
+## Approach
+
+- The script converts the input to hex-coded bytes and XORs them with `0x55`. This python program will decode the hex encoding and retrieve the password:
+```
+myBytes = [
+    0x3b, 0x65, 0x21, 0xa , 0x38, 0x0 , 0x36, 0x1d,
+    0xa , 0x3d, 0x61, 0x27, 0x11, 0x66, 0x27, 0xa ,
+    0x21, 0x1d, 0x61, 0x3b, 0xa , 0x2d, 0x65, 0x27,
+    0xa , 0x6c, 0x60, 0x37, 0x30, 0x60, 0x31, 0x36,
+]
+passBytes = [i ^ 0x55 for i in myBytes]
+password = "".join(chr(i) for i in passBytes)
+
+print(password)
+```
+- Verify the flag:
+```
+$ java ./VaultDoor6.java
+Enter vault password: picoCTF{n0t_mUcH_h4rD3r_tH4n_x0r_95be5dc}
+Access granted.
+```
+
+## New concepts
+
+1. Arrays in java
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# vault-door-7
+
+**Flag:** `picoCTF{A_b1t_0f_b1t_sh1fTiNg_dc80e28124}`
+
+## Approach
+
+- The encoding done by the challenge script is similar to the `bytes_to_long()` function in the `Crypto.Util.number` module of Python. This can easily be reversed with the follwing Python script:
+```
+pwd = [ # Numbers as given in the challenge script
+    1096770097,
+    1952395366,
+    1600270708,
+    1601398833,
+    1716808014,
+    1734304867,
+    942695730,
+    942748212,
+]
+
+flag = "".join(num.to_bytes(32).decode() for num in pwd)
+
+print(flag)
+```
+
+## New concepts
+
+1. Usage of `int.to_bytes()` function in Python
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
+# vault-door-8
+
+**Flag:** `picoCTF{s0m3_m0r3_b1t_sh1fTiNg_2e762b0ab}`
+
+## Approach
+
+- The code can easily be stylised using any Java extension that supports document formatting on VSCode
+- The code shuffles bits for every character in the user input before comparing with a pre-shuffled list of numbers
+- The pre-shuffled list can be un-shuffled using this Python code:
+```
+def switch_bits(c: int, bit1: int in range(7), bit2: int in range(7)):
+    c = bin(c)[2:]
+    c = '0' * (8 - len(c)) + c
+    c = list(c)
+    c[-bit1-1], c[-bit2-1] = c[-bit2-1], c[-bit1-1]
+    c = int("".join(i for i in c), 2)
+    return c
+
+def unscramble(scrambled: list[int]):
+    unscrambled = ""
+    for i in scrambled:
+        i = switch_bits(i, 6, 7)
+        i = switch_bits(i, 2, 5)
+        i = switch_bits(i, 3, 4)
+        i = switch_bits(i, 0, 1)
+        i = switch_bits(i, 4, 7)
+        i = switch_bits(i, 5, 6)
+        i = switch_bits(i, 0, 3)
+        i = switch_bits(i, 1, 2)
+        unscrambled += chr(i)
+    return unscrambled
+
+
+scrambled_password = [
+    0xF4, 0xC0, 0x97, 0xF0, 0x77, 0x97, 0xC0, 0xE4, 
+    0xF0, 0x77, 0xA4, 0xD0, 0xC5, 0x77, 0xF4, 0x86, 
+    0xD0, 0xA5, 0x45, 0x96, 0x27, 0xB5, 0x77, 0xE0, 
+    0x95, 0xF1, 0xE1, 0xE0, 0xA4, 0xC0, 0x94, 0xA4 
+]
+
+print(unscramble(scrambled_password))
+# s0m3_m0r3_b1t_sh1fTiNg_2e762b0ab
+
+```
+
+## New concepts
+
+1. Document formatting in VSCode
+2. Code style in Java
+
+## References
+
+- https://code.visualstudio.com/docs/java/java-linting
+
+&nbsp;
+
+&nbsp;
+
+<hr style="border:2px solid gray; background-color: gray">
+&nbsp;
+
+&nbsp;
+
