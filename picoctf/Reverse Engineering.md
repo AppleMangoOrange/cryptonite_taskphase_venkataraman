@@ -5,9 +5,9 @@
 ## Approach
 
 - The `debugger0_a` file downloaded does not have debug info (which can be seen using `file`). The required number is the value of the `eax` register at the end of main.
-- To find this, we can make use of the GNU  debugger. `gdb ./debugger0_a`. We can enter our command at the end of `(gdb) `. Running the program with `r` returns an error code.
-- We can add a breakpoint to the code using `b main`. Now, when running with `r`, the program stops just before main. With `n` (or `s`), we can move to the end of the main function (since we do not have the source code).
-- Now, we can view the value in the `eax` register using `info registers eax`. The third value is the value stored in the register.
+- To find this, make use of the GNU  debugger. `gdb ./debugger0_a`. Enter our command at the end of `(gdb) `. Running the program with `r` returns an error code.
+- Add a breakpoint to the code using `b main`. Now, when running with `r`, the program stops just before main. With `n` (or `s`), move to the end of the main function (since the source code is not available).
+- Now, view the value in the `eax` register using `info registers eax`. The third value is the value stored in the register.
 
 ## New concepts
 
@@ -53,7 +53,7 @@
 ## Approach
 
 - Use Cutter/Rizin to decompile the given binary
-- In the `sym.func1` function, we find the line `return (int32_t)arg1 * 0x3269;`
+- In the `sym.func1` function, find the line `return (int32_t)arg1 * 0x3269;`
 - `3269` in hex is `12095` in decimal
 
 ## New concepts
@@ -75,8 +75,8 @@
 
 ## Approach
 
-- The only file we are given is an armv8-a or AARCH64 assembly code plain text file. (as seen in the first line of the text file)
-- Going through the code, we see two funcions; `func1` and `main`. Let's first look at `func1`.
+- The only file given is an armv8-a or AARCH64 assembly code plain text file. (as seen in the first line of the text file)
+- Going through the code, one can identify two funcions; `func1` and `main`. Let's first look at `func1`.
 - This seems to be a function with two paramemters. Let's call them `a` and `b`. The code can be understood with the following C-like translation:
 ```
 func1 (a, b):
@@ -120,7 +120,7 @@ main (argc, argv):
     x29 = *sp; x30 = *(sp + 8b); sp += 48b      // Restore x29, x30 and sp
     ret                 // Return from main
 ```
-- Now, we can decompile this assembly code:
+- Now, decompile this assembly code:
 ```
 func1 (a, b):
     if a <= b:
@@ -219,6 +219,7 @@ main (argc, argv = {./program, a}):
         call puts()         // Print win condition
     x29 = *sp; x30 = *(sp + 8b); sp += 48b
 ```
+- The program checks whether the input is `232`, and prints the win condition if it is
 
 ## New concepts
 
@@ -272,8 +273,8 @@ void main(int argc, char **argv)
     return;
 }
 ```
-- As we can see, the function runs a loop to add 3 to 0 `a` times, where a is the CLI paramemter we give. This means it just outputs `a*3`. `a` here is `3736234946`, so `a*3` is `11208704838`.
-- Converting this to binary, we get `29c174346`. Since we should only take 32 bits, the number we want is `9c174346`.
+- Clearly, the function runs a loop to add 3 to 0 `a` times, where a is the CLI paramemter given. This means it just outputs `a*3`. `a` here is `3736234946`, so `a*3` is `11208704838` which is `29c174346` in hexadecimal.
+- Since only 32 bits should be taken, the number necessary is `9c174346`.
 
 &nbsp;
 
@@ -290,8 +291,8 @@ void main(int argc, char **argv)
 
 ## Approach
 
-- - Convert the file to a link file using `aarch64-linux-gnu-as -o <output> <input>`
-- Open the `.o` file in Rizin/Cutter. The Ghidra decompiler is the easier option here. `main` passes the CLI parameter (say `a`) to `func1`. `func2` just adds 3 to its input. Let's look at `func1`:
+- Convert the file to a link file using `aarch64-linux-gnu-as -o <output> <input>`
+- Decompile the `.o` file in Rizin/Cutter. The Ghidra decompiler is the easier option here. `main` passes the CLI parameter (say `a`) to `func1`. `func2` just adds 3 to its input. Let's look at `func1`:
 ```
 uint32_t func1(int64_t arg1)
 {
@@ -315,7 +316,7 @@ uint32_t func1(int64_t arg1)
     int var_14h;
     unsigned int uStack_4;
     for (var_14h = 597130609; var_14h != 0; var_14h = var_14h >> 1) {
-        if ((var_14h & 1) != 0) {
+        if ((var_14h & 1) != 0) { // if var_14h is odd
             uStack_4 += 3;
         }
     }
@@ -343,14 +344,14 @@ main (64_a): // 3251372985
     printf("Result: %ld\n", func1(u32_a));
 
 func1 (64_a):
-    if (u32_a <= 100):
+    if (u32_a <= 100): // False
         func3(32_a)
     else:
         func2(u64_(u32_a + 100)) // 3251373085
 
 func2 (64_a):
-    if (32_a < 500):
-        # func4()
+    if (32_a < 500): // false
+        func4()
     else:
         func5(u64_(u32_a + 13)) // 3251373098
 
@@ -361,7 +362,7 @@ func8 (64_a):
     return (32_a + 2)           // 3251373100
 
 ```
-- Convert `3251373100` to hexadecimal
+- Convert `3251373100` to hexadecimal; `0xc1cc042c`
 
 &nbsp;
 
@@ -400,7 +401,7 @@ func8 (64_a):
 ...
             buffer[i] = password.charAt(i);
         }
-        System.out.println(buffer); // 
+        System.out.println(buffer); // New line
         String s = new String(buffer);
         return s.equals("jU5t_a_sna_3lpm18g947_u_4_m9r54f");
 ...
@@ -412,7 +413,7 @@ Enter vault password: picoCTF{0123456789abcdefghijklmnopqrstuv}
 01234567fedcba98uhsjqlonmpkritgv
 Access denied!
 ```
-- Now that we know how the program jumbles the string, we can easily decipher the flag using the string `s` in the program.
+- Now that it is known how the program jumbles the string, simply decipher the flag using the string `s` in the program.
 
 &nbsp;
 
@@ -429,8 +430,8 @@ Access denied!
 
 ## Approach
 
-- The program simply stores each character of the flag in various bases. We could convert these character individually to get the flag, but there is an easier method.
-- To avoid doing manual labour, we can modify the code to do our work for us:
+- The program simply stores each character of the flag in various bases. It is possible convert these character individually to get the flag, but there is an easier method.
+- To avoid doing manual labour, modify the code to do the work instead:
 ```
         for (int i=0; i<32; i++) {
             // if (passBytes[i] != myBytes[i]) {
@@ -439,7 +440,7 @@ Access denied!
             System.out.print(myBytes[i]+" ");
         }
 ```
-- We can then just put this output through an ASCII decoder like https://www.dcode.fr/ascii-code.
+- Just put this output through an ASCII decoder like https://www.dcode.fr/ascii-code.
 
 &nbsp;
 
@@ -456,8 +457,8 @@ Access denied!
 
 ## Approach
 
-- We can see an `expected` string in the end of the `checkPassword()` function.
-- The string is encoded using URL, then base64. So we can take the expected string and put it through a [base64 decoder](https://www.dcode.fr/base-64-encoding) and a [URL decoder](https://www.dcode.fr/url-decoder).
+- There an `expected` string in the end of the `checkPassword()` function.
+- The string is encoded using URL, then base64. So take the expected string and put it through a [base64 decoder](https://www.dcode.fr/base-64-encoding) and then a [URL decoder](https://www.dcode.fr/url-decoder).
 
 &nbsp;
 
@@ -641,10 +642,6 @@ else:
 
 ```
 
-## New concepts
-
-1. `cryptography.fernet.Fernet` encrypting
-
 &nbsp;
 
 &nbsp;
@@ -660,8 +657,8 @@ else:
 
 ## Approach
 
-- Enter `win` in the input of the program
-- [Decode the flag](https://gchq.github.io/CyberChef/#recipe=Split('%200x','')From_Hex('0x')&input=MHg3MCAweDY5IDB4NjMgMHg2ZiAweDQzIDB4NTQgMHg0NiAweDdiIDB4MzQgMHg1ZiAweDY0IDB4MzEgMHgzNCAweDZkIDB4MzAgMHg2ZSAweDY0IDB4NWYgMHgzMSAweDZlIDB4NWYgMHgzNyAweDY4IDB4MzMgMHg1ZiAweDcyIDB4MzAgMHg3NSAweDY3IDB4NjggMHg1ZiAweDYzIDB4NjUgMHgzNCAweDYyIDB4MzUgMHg2NCAweDM1IDB4NjIgMHg3ZA) from hex
+- Enter `win` in the input of the program. This runs the win function.
+- [Decode the flag](https://gchq.github.io/CyberChef/#recipe=Split('%200x','')From_Hex('0x')&input=MHg3MCAweDY5IDB4NjMgMHg2ZiAweDQzIDB4NTQgMHg0NiAweDdiIDB4MzQgMHg1ZiAweDY0IDB4MzEgMHgzNCAweDZkIDB4MzAgMHg2ZSAweDY0IDB4NWYgMHgzMSAweDZlIDB4NWYgMHgzNyAweDY4IDB4MzMgMHg1ZiAweDcyIDB4MzAgMHg3NSAweDY3IDB4NjggMHg1ZiAweDYzIDB4NjUgMHgzNCAweDYyIDB4MzUgMHg2NCAweDM1IDB4NjIgMHg3ZA) from hex.
 
 
 ## New concepts
@@ -735,7 +732,7 @@ Please enter new value of variable: win
 
 ## New concepts
 
-1. Overwriting Python objects' values
+1. Overwriting Python objects' values (assigning functions to variables)
 
 &nbsp;
 
@@ -798,7 +795,7 @@ mov    eax,DWORD PTR [rbp-0x4]
 - `mov    eax,DWORD PTR [rbp-0xc]`: `eax` is now 654874
 - `imul   eax,DWORD PTR [rbp-0x8]`: `eax` is now 654874 * 4 = 2619496
 - `add    eax,0x1f5`: eax is now 2619496 + 501 = 2619997
-- The next two lines store the value of eax in the stack and retrieve it, which does not change its value
+- The next two lines store the value of eax in the stack and retrieve it, which does not change its value.
 
 &nbsp;
 
@@ -823,17 +820,6 @@ mov    eax,DWORD PTR [rbp-0x4]
 - `jmp    0x555555555152 <main+41>`: jumps to `<main+41>`
 - `mov    eax,DWORD PTR [rbp-0x4]`: eax = n = 0x9fdb5 = 654773
 
-## New concepts
-
-1. 
-
-## Incorrect methods tried
-
-- 
-
-## References
-
-- 
 
 &nbsp;
 
@@ -872,7 +858,7 @@ Access granted.
 
 ## New concepts
 
-1. Arrays in java
+1. Arrays in Java
 
 &nbsp;
 
@@ -926,8 +912,8 @@ print(flag)
 
 ## Approach
 
-- The code can easily be stylised using any Java extension that supports document formatting on VSCode
-- The code shuffles bits for every character in the user input before comparing with a pre-shuffled list of numbers
+- The code can easily be stylised using any Java extension that supports the "Format Document" function in VSCode.
+- The code shuffles bits for every character in the user input before comparing with a pre-shuffled list of numbers.
 - The pre-shuffled list can be un-shuffled using this Python code:
 ```
 def switch_bits(c: int, bit1: int in range(7), bit2: int in range(7)):

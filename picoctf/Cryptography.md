@@ -247,7 +247,9 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 
 ## Approach
 
+- The cipher can be identified using an identification tool such as [this](https://www.dcode.fr/cipher-identifier).
 - Apply brute force decrption of the Affine cipher knowing that the flag starts with `picoCTF`
+- The values for A and B are 1 and 8 respectively.
 
 &nbsp;
 
@@ -265,6 +267,7 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 ## Approach
 
 - Opening the .csr file using the certificate manager shows its name, which is the flag
+![Certificate Manager](images/Cryptography/ReadMyCert/image.png)
 
 ## New concepts
 
@@ -290,6 +293,7 @@ STR : b'picoCTF{n33d_a_lArg3r_e_ccaa7776}'
 ## Approach
 
 - Use a steganographic decoder on the image to get `krxlXGU{zgyzhs_xizxp_7142uwv9}`
+- A cipher identification tool can deduce that it has been encoded using the Atbash cipher.
 - Use [an Atbash Cipher decoder](https://www.dcode.fr/atbash-cipher) to get the flag
 
 ## Incorrect methods tried
@@ -691,7 +695,8 @@ print(decrypt(ciphertext, key.encode()).decode())
 
 ## Approach
 
-- The Salsa20 cipher used in the challenge code does not seem to have any way to feasably decode it, so the weakest link in this case is the `zlib` library. The code outputs the length of the enrypted text in each iteration, and appending bits of the flag (greater than 3 characters) means zlib compresses the string down. Since the start of the flag (`picoCTF{`) is known, it is possible to iterate through printable characters to figure out the flag.
+- The Salsa20 cipher used in the challenge code does not seem to have any way to feasably decrypt it, so the weakest link in this case is the `zlib` library. The code outputs the length of the enrypted text in each iteration, and appending bits of the flag (greater than 3 characters) means zlib compresses the string down. 
+- Since the start of the flag (`picoCTF{`) is known, it is possible to iterate through printable characters to figure out the flag.
 ```
 import string
 
@@ -756,29 +761,16 @@ if __name__ == '__main__':
 
 ## Approach
 
-- The challenge provides a list of RSA-encrypted ciphertexts with the corresponding modulus and public exponent. The cipher's code reveals that the list contains randomly 3 encouraging messages and the flag, which are jumbled.
+- The challenge provides a list of RSA-encrypted ciphertexts with the corresponding modulus and public exponent. The cipher's code reveals that the list contains, randomly, 3 encouraging messages and the flag; which are also jumbled.
 - The public exponent is too small and the message is not padded in any way. This means that the cipher is vulnerable to attacks. The optimised code for this attack is given [here](https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa#small-exponent-short-plaintext-root). It leverages the fact that m<sup>3</sup> (m is the message as a number) is smaller than or comparable to n (n is the modulus). Here is the mathematical explanation:
 
-[//]: # (This code is taken from https://book.jorianwoltjer.com/cryptography/asymmetric-encryption/rsa#small-exponent-short-plaintext-root)
+```
+c = m^3 mod n
+m^3 = c + n × k
+m = ∛(c + n × k)
+```
 
-<div class="w-full mx-auto decoration-primary/6 max-w-3xl page-api-block:ml-0 overflow-x-auto"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="right left" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>c</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><msup><mi>m</mi><mn>3</mn></msup><mtext> </mtext><mo lspace="0.22em" rspace="0.22em"><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow></mo><mtext> </mtext><mi>n</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><msup><mi>m</mi><mn>3</mn></msup></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mi>c</mi><mo>+</mo><mi>n</mi><mo>×</mo><mi>k</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>m</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mroot><mrow><mi>c</mi><mo>+</mo><mi>n</mi><mo>×</mo><mi>k</mi></mrow><mn>3</mn></mroot></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*} 
-c &amp;= m^3 \bmod n \\
-m^3 &amp;= c + n \times k \\
-m &amp;= \sqrt[3]{c + n \times k}
-\end{align*}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:4.6476em;vertical-align:-2.0738em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.5738em;"><span style="top:-4.7097em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">c</span></span></span><span style="top:-3.1856em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span><span style="top:-1.5862em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.0738em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.5738em;"><span style="top:-4.7097em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.0556em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin"><span class="mord"><span class="mord mathrm">mod</span></span></span><span class="mspace" style="margin-right:0.0556em;"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span></span></span><span style="top:-3.1856em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span><span style="top:-1.5862em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord sqrt"><span class="root"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8255em;"><span style="top:-3.0033em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size6 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9394em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span><span style="top:-2.8994em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z"></path></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1006em;"><span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.0738em;"><span></span></span></span></span></span></span></span></span></span></span></span></div>
-
-- Here, k is a small number, so iterating through whole numbers should be enough to get the plaintext flag. Here is the code, leveraging the code found on Practical CTF:
+- Here, k is a small number, so iterating through whole numbers should be enough to get the plaintext flag. Here is the code, leveraging the code found on "Practical CTF":
 
 `small_e_crack.py:`
 ```
@@ -828,9 +820,12 @@ output:
 FOUND FLAG: picoCTF{1_gu3ss_p30pl3_p4d_m3ss4g3s_f0r_4_r34s0n}
 ```
 
+- Using message padding would have made `m^3` much larger than n, making k too large to feasabily crack this cipher.
+
 ## New concepts
 
 1. Hastad's attack
+2. Message padding in RSA
 
 ## Incorrect methods tried
 
